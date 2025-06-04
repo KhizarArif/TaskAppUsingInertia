@@ -1,12 +1,17 @@
 import { router, useForm } from "@inertiajs/react";
 import React from "react";
+import useAdminLayout from "../../Layouts/useAdminLayout";
 
 const Create = ({ task }) => {
     const isEditMode = Boolean(task);
 
-    const { post, data, setData, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         name: task?.name || "",
         id: task?.id || null,
+        assigned_to: task?.assigned_to || "",
+        starting_date: task?.starting_date || "",
+        ending_date: task?.ending_date || "",
+        status: task?.status || "",
     });
 
     const handleSubmit = (e) => {
@@ -29,41 +34,120 @@ const Create = ({ task }) => {
         }
     };
     return (
-        <div
-            className="flex justify-evenly h-[50vh] w-1/3 rounded-2xl shadow-xl p-8 m-auto mt-10"
-            style={{ background: "#958d8d" }}
-        >
-            <div className="flex flex-col items-center w-full max-w-md ">
-                <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">
-                    📝 Task Manager
-                </h1>
+        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-10 mt-10">
+            <h1 className="text-2xl font-bold text-center text-indigo-600 mb-10">
+                📝 Task Manager
+            </h1>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="flex w-[250px] gap-2 m-auto mb-6"
-                >
+            <form
+                onSubmit={handleSubmit}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+                {/* Task Name */}
+                <div>
+                    <label className="block mb-1 font-semibold">
+                        Task Name
+                    </label>
                     <input
                         type="text"
                         value={data.name}
                         name="name"
                         onChange={(e) => setData("name", e.target.value)}
                         placeholder="Add a new task..."
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                     />
                     {errors?.name && (
-                        <div className="text-red-500">{errors?.name}</div>
+                        <p className="text-red-500 text-sm">{errors.name}</p>
                     )}
+                </div>
+
+                {/* Assigned To */}
+                <div>
+                    <label className="block mb-1 font-semibold">
+                        Assigned To
+                    </label>
+                    <input
+                        type="text"
+                        value={data.assigned_to}
+                        onChange={(e) => setData("assigned_to", e.target.value)}
+                        placeholder="Assign to"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    />
+                    {errors?.assigned_to && (
+                        <p className="text-red-500 text-sm">
+                            {errors.assigned_to}
+                        </p>
+                    )}
+                </div>
+
+                {/* Starting Time */}
+                <div>
+                    <label className="block mb-1 font-semibold">
+                        Starting Time
+                    </label>
+                    <input
+                        type="datetime-local"
+                        value={data.starting_date}
+                        onChange={(e) =>
+                            setData("starting_date", e.target.value)
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    />
+                    {errors?.starting_date && (
+                        <p className="text-red-500 text-sm">
+                            {errors.starting_date}
+                        </p>
+                    )}
+                </div>
+
+                {/* Ending Time */}
+                <div>
+                    <label className="block mb-1 font-semibold">
+                        Ending Time
+                    </label>
+                    <input
+                        type="datetime-local"
+                        value={data.ending_date}
+                        onChange={(e) => setData("ending_date", e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    />
+                    {errors?.ending_date && (
+                        <p className="text-red-500 text-sm">
+                            {errors.ending_date}
+                        </p>
+                    )}
+                </div>
+
+                {/* Status */}
+                <div>
+                    <label className="block mb-1 font-semibold">Status</label>
+                    <select
+                        value={data.status}
+                        onChange={(e) => setData("status", e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    >
+                        <option value="">Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    {errors?.status && (
+                        <p className="text-red-500 text-sm">{errors.status}</p>
+                    )}
+                </div>
+
+                {/* Submit Button */}
+                <div className="md:col-span-2">
                     <button
                         disabled={processing}
                         type="submit"
-                        className="px-4 py-2 bg-indigo-500 text-white font-medium rounded-lg hover:bg-indigo-600 transition"
+                        className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200"
                     >
-                        {isEditMode ? "Update Task " : "Create Task"}
+                        {isEditMode ? "Update Task" : "Create Task"}
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     );
 };
 
-export default Create;
+export default useAdminLayout(Create);

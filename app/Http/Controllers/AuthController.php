@@ -30,5 +30,23 @@ class AuthController extends Controller
     {
         return $this->authServices->registerAuthenticate($request);
     }
+    public function logout(Request $request)
+    {
+        return $this->authServices->logout($request);
+    }
+    public function forgetPasswordForm(Request $request)
+    {
+        return $this->authServices->forgetPasswordForm($request);
+    }
+    public function forgetPassword(Request $request)
+    {
+        return $this->authServices->forgetPassword($request);
+    }
+
+   
+    public function resetPassword(Request $request)
+    {
+        return $this->authServices->resetPassword($request);
+    }
 
 }

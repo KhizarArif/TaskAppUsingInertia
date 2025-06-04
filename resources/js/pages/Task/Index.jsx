@@ -6,10 +6,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { router } from "@inertiajs/react";
+import useAdminLayout from "../../Layouts/useAdminLayout";
 
 const Index = ({ taskList }) => {
     return (
-        <div className="w-3xl overflow-x-auto m-auto mt-7">
+        <div className="w-7xl overflow-x-auto m-auto mt-7">
             {/* Add Button */}
             <div className="flex justify-end mr-4 min-w-2xl">
                 <motion.button
@@ -24,11 +25,15 @@ const Index = ({ taskList }) => {
             </div>
 
             {/* Table */}
-            <table className="min-w-3xl bg-white shadow-md rounded-lg overflow-hidden m-auto ">
+            <table className="min-w-7xl bg-white shadow-md rounded-lg overflow-hidden m-auto ">
                 <thead className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <tr>
                         <th className="py-3 px-6 text-left">#</th>
                         <th className="py-3 px-6 text-left">Task Name</th>
+                        <th className="py-3 px-6 text-left">Assign To </th>
+                        <th className="py-3 px-6 text-left">Starting Time </th>
+                        <th className="py-3 px-6 text-left">Ending Time </th>
+                        <th className="py-3 px-6 text-left">Status </th>
                         <th className="py-3 px-6 text-center">Actions</th>
                     </tr>
                 </thead>
@@ -43,13 +48,27 @@ const Index = ({ taskList }) => {
                             </td>
                         </tr>
                     ) : (
-                        taskList.map((task, index) => (
+                        taskList?.map((task, index) => (
                             <tr
                                 key={task.id}
                                 className="border-b hover:bg-gray-50"
                             >
                                 <td className="py-3 px-6">{index + 1}</td>
                                 <td className="py-3 px-6">{task.name}</td>
+                                <td className="py-3 px-6">{task.assigned_to || 'Unassigned'}</td>
+                                <td className="py-3 px-6">{task.starting_date || 'N/A'}</td>
+                                <td className="py-3 px-6">{task.ending_date || 'N/A'}</td>
+                                <td className="py-3 px-6">
+                                    <span
+                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                                            task.status === 'completed'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-yellow-100 text-yellow-800'
+                                        }`}
+                                    >
+                                        {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+                                    </span>
+                                </td>
                                 <td className="py-3 px-6 text-center flex justify-center gap-4">
                                     <motion.button
                                         whileHover={{ scale: 1.2 }}
@@ -83,4 +102,4 @@ const Index = ({ taskList }) => {
     );
 };
 
-export default Index;
+export default useAdminLayout(Index);

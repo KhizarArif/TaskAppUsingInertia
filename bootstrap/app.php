@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
          $middleware->alias([
-            'auth.custom' => RedirectIfNotAuthenticated::class,
+            'auth' => RedirectIfNotAuthenticated::class,
+            'inertia' => \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
