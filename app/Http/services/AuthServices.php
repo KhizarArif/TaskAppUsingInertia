@@ -35,7 +35,7 @@ class AuthServices
         if ($validator->passes()) {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $request->session()->regenerate();
-                return Inertia::location('/');
+                return Inertia::location('/dashboard');
             } else {
                 return Inertia::render('Login/Index', [
                     'message' => 'User name or Password is incorrect',
@@ -70,7 +70,7 @@ class AuthServices
             ]));
 
             Auth::login($user);
-            return Inertia::location('/');
+            return Inertia::location('/dashbaord');
         }
     }
 
@@ -80,7 +80,9 @@ class AuthServices
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('auth.login');
+        // return redirect()->route('auth.login');
+        // return Inertia::location('/auth/login');
+        return response()->noContent();
     }
 
     public function forgetPasswordForm($request)
@@ -91,7 +93,7 @@ class AuthServices
     public function forgetPassword($request)
     {
         $validation = Validator::make($request->all(), [
-             'email' => 'required|email|exists:users,email',
+            'email' => 'required|email|exists:users,email',
         ]);
 
         if ($validation->fails()) {
@@ -106,7 +108,7 @@ class AuthServices
     }
 
 
-    public function resetPassword( $request)
+    public function resetPassword($request)
     {
         $request->validate([
             'email' => 'required|email',

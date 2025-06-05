@@ -6,7 +6,15 @@ export default function Navbar({ user }) {
     const handleLogout = () => {
         console.log("Logging out...");
 
-        router.post("/auth/logout");
+        router.post(
+            "/auth/logout",
+            {},
+            {
+                onFinish: () => { 
+                    router.visit("/auth/login");
+                },
+            }
+        );
     };
 
     return (
