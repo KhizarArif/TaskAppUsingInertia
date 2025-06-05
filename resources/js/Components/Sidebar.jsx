@@ -17,7 +17,11 @@ export default function Sidebar() {
                             Tasks
                         </Link>
                     </li>
-                    {/* Add more links as needed */}
+                    <li>
+                        <Link href="/tasks" className="hover:underline">
+                            Users
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </aside>

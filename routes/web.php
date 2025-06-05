@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -32,11 +33,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/{task}', 'update')->name('tasks.update');
             Route::delete('/{task}/delete', 'destroy')->name('tasks.destroy');
         });
-
-    // Route::get('/dashboard', function () {
-    //     return Inertia::render('Dashboard', [
-    //         'message' => 'Welcome to the Dashboard',
-    //     ]);
-    // })->name('dashboard');
     Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
+
+    Route::resource('users', UserController::class);
 });

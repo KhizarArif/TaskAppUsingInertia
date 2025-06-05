@@ -10,13 +10,13 @@ export default function Navbar({ user }) {
             "/auth/logout",
             {},
             {
-                onFinish: () => { 
+                onFinish: () => {
                     router.visit("/auth/login");
                 },
             }
         );
     };
-
+ 
     return (
         <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
             <h1 className="text-lg font-semibold">Welcome, Admin</h1>
