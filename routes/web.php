@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,13 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{task}/delete', 'destroy')->name('tasks.destroy');
         });
     Route::get('dashboard', [HomeController::class, 'index'])->name('dashboard');
-
-    Route::resource('users', UserController::class);
+ 
+    Route::resource('roles', RoleController::class);
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'index')->name('users.index');
+        Route::post('/', 'store')->name('users.store');
+        Route::get('/create', 'create')->name('users.create');
+        Route::get('/{role}/edit', 'edit')->name('users.edit');
+        Route::delete('/{role}/delete', 'destroy')->name('users.destroy');
+    });
 });

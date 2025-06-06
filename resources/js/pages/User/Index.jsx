@@ -1,12 +1,29 @@
 import React from "react";
 import useAdminLayout from "../../Layouts/useAdminLayout";
 import { Edit, Trash2 } from "lucide-react";
+import { Link } from "@inertiajs/react";
 
 const Index = ({ users }) => {
     return (
         <div className="p-3">
             <button className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
-                Create
+                <Link href="/users/create" className="flex items-center gap-2">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4v16m8-8H4"
+                        />
+                    </svg>
+                    Create
+                </Link> 
             </button>
             <div className="overflow-x-auto rounded-xl shadow-sm mt-4">
                 <table className="min-w-full divide-y divide-gray-200">

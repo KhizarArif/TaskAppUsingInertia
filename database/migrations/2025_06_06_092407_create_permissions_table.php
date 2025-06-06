@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('assigned_to')->nullable();
-            $table->enum('status', ['pending', 'completed'])->default('pending');
-            $table->dateTime('starting_date')->nullable();
-            $table->dateTime('ending_date')->nullable();
+             $table->enum('status', ['Active', 'InActive'])->default('InActive');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('permissions');
     }
 };

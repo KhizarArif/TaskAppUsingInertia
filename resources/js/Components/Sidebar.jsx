@@ -18,8 +18,13 @@ export default function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/tasks" className="hover:underline">
+                        <Link href="/users" className="hover:underline">
                             Users
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href="/roles" className="hover:underline">
+                            Roles
                         </Link>
                     </li>
                 </ul>
