@@ -23,7 +23,7 @@ const Index = ({ users }) => {
                         />
                     </svg>
                     Create
-                </Link> 
+                </Link>
             </button>
             <div className="overflow-x-auto rounded-xl shadow-sm mt-4">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -56,7 +56,16 @@ const Index = ({ users }) => {
                                     {user.email}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                    {user.role}
+                                    {user?.roles?.length > 0
+                                        ? user?.roles?.map((role) => (
+                                              <span
+                                                  key={role.id}
+                                                  className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold mr-2 mb-2"
+                                              >
+                                                  {role.name}
+                                              </span>
+                                          ))
+                                        : "No Role Assigned"}
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
                                     <button

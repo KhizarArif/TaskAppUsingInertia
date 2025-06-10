@@ -1,67 +1,19 @@
 import React from "react";
 import useAdminLayout from "../../Layouts/useAdminLayout";
-import { router, useForm } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
 const Index = ({ roles }) => {
-    const { data, setData } = useForm({
-        roles: "",
-        status: "",
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        router.post("/roles", data, {
-            preserveScroll: true,
-            onSuccess: () => {
-                console.log("Role created successfully");
-            },
-            onError: (errors) => {
-                console.error("Error creating role:", errors);
-            },
-        });
-        console.log("Role created:", data.roles);
-        setData("roles", "");
-    };
-
     return (
         <div>
-            <div className="p-3 w-3/4">
-                <h1 className="text-2xl font-semibold mb-4">Roles</h1>
-                <form
-                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4"
-                    onSubmit={handleSubmit}
-                >
-                    {/* Role Input */}
-                    <input
-                        type="text"
-                        placeholder="Create roles..."
-                        name="roles"
-                        value={data.roles}
-                        onChange={(e) => setData("roles", e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-1/2"
-                    />
-
-                    {/* Status Select */}
-                    <select
-                        name="status"
-                        value={data.status}
-                        onChange={(e) => setData("status", e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-1/4"
-                    >
-                        <option value="">Select Status</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-
-                    {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition w-full sm:w-1/4"
-                    >
-                        Create Role
-                    </button>
-                </form>
-
+            <div className="p-3 w-full">
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-2xl font-semibold mb-4">Roles</h1>
+                    <Link href="/roles/create">
+                        <button className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            Create Role
+                        </button>
+                    </Link>
+                </div>
                 <div className="overflow-x-auto rounded-xl shadow-sm mt-4 w-full">
                     <table className="w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
@@ -70,7 +22,13 @@ const Index = ({ roles }) => {
                                     Role Name
                                 </th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                                    Permissions
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
                                     Status
+                                </th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                                    Created
                                 </th>
                                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">
                                     Actions
@@ -78,38 +36,93 @@ const Index = ({ roles }) => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-100 w-full">
-                            {/* Example role data, replace with actual data */}
                             {roles?.length === 0 ? (
                                 <tr>
-                                    <td> No Roles Yet </td>
+                                    <td
+                                        colSpan="5"
+                                        className="px-4 py-3 text-center text-sm text-gray-500"
+                                    >
+                                        No Roles Found
+                                    </td>
                                 </tr>
                             ) : (
                                 roles?.map((role) => (
                                     <tr
                                         className="hover:bg-gray-50 transition"
-                                        key={role?.id}
+                                        key={role.id}
                                     >
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
                                             {role.name}
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
-                                            {role.status
-                                                ? "Active"
-                                                : "Inactive"}
+                                        {/* <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800"> */}
+                                        {/* <td className="max-w-xs break-words whitespace-normal min-h-[40px]">
+                                            {Object.keys(role.permissions)
+                                                .length > 0
+                                                ? Object.values(
+                                                      role.permissions
+                                                  ).join(", ")
+                                                : "No permissions assigned"}
+                                        </td> */}
+                                        <td className="px-4 py-3">
+                                            <div className="max-w-xs flex flex-wrap gap-2">
+                                                {Object.keys(role.permissions)
+                                                    .length > 0 ? (
+                                                    Object.entries(
+                                                        role.permissions
+                                                    ).map(([id, name]) => (
+                                                        <span
+                                                            key={id}
+                                                            // className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                                            // Different colors for different permission types
+                                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                                        ${
+                                                                            name.includes("admin")
+                                                                                ? "bg-red-100 text-red-800"
+                                                                                : name.includes("edit")
+                                                                                ? "bg-yellow-100 text-yellow-800"
+                                                                                : "bg-blue-100 text-blue-800"
+                                                                        }`}
+                                                        >
+                                                            {name}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-sm text-gray-500">
+                                                        No permissions assigned
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
-                                            <button
-                                                onClick={() =>
-                                                    alert("Edit role")
-                                                }
-                                                className="text-blue-500 hover:text-blue-700 mr-3"
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs ${
+                                                    role.status === "active"
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-red-100 text-red-800"
+                                                }`}
+                                            >
+                                                {role.status
+                                                    ? role.status
+                                                          .charAt(0)
+                                                          .toUpperCase() +
+                                                      role.status.slice(1)
+                                                    : "Inactive"}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                            {role.created_at}
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
+                                            <Link
+                                                // href={route('roles.edit', role.id)}
+                                                className="text-blue-500 hover:text-blue-700"
                                                 title="Edit"
                                             >
                                                 Edit
-                                            </button>
+                                            </Link>
                                             <button
                                                 onClick={() =>
-                                                    alert("Delete role")
+                                                    confirmDelete(role.id)
                                                 }
                                                 className="text-red-500 hover:text-red-700"
                                                 title="Delete"

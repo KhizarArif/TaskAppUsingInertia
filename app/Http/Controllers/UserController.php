@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -14,16 +15,10 @@ class UserController extends Controller
      */
     public function index()
     {
+        $users = User::with('roles')->get();
+        // dd($users);
         return Inertia::render('User/Index', [
-            'users' => User::all()->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'created_at' => $user->created_at->diffForHumans(),
-                ];
-            })
+            'users' => $users
         ]);
     }
 
@@ -32,13 +27,17 @@ class UserController extends Controller
      */
     public function create()
     {
+        // $roles = Role::all()->pluck('name', 'id');
+        // dd($roles);
         return Inertia::render('User/Create', [
             'user' => [
                 'id' => null,
                 'name' => '',
                 'email' => '',
-                'role' => '',
-            ]
+                'role' => [],
+            ],
+            'allRoles' => array_values(Role::pluck('name')->toArray()),
+
         ]);
     }
 
@@ -47,6 +46,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $isUpdate = $request->has('id') && $request->id !== null;
         // dd($request->all());
         $rules = [
@@ -58,7 +58,7 @@ class UserController extends Controller
                     ? ''
                     : 'unique:users,email'
             ],
-            'role' => 'required',
+            // 'role' => 'required',
             'password' => $isUpdate ? 'nullable|string|min:6' : 'required|string|min:6',
         ];
 
@@ -72,24 +72,37 @@ class UserController extends Controller
             $user = User::findOrFail($request->id);
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->role = $request->role;
+            // $user->role = $request->role;
 
             if ($request->filled('password')) {
                 $user->password = bcrypt($request->password);
             }
 
             $user->save();
+            $user->syncRoles($request->roles);
         } else {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'role' => $request->role,
+                // 'role' => $request->role,
                 'password' => bcrypt($request->password),
                 'email_verified_at' => now(),
             ]);
+            $user->syncRoles($request->roles);
         }
 
-        return Inertia::location(route('users.index'));
+        // return Inertia::location(route('users.index'));
+        return Inertia::render('User/Index', [
+            'users' => User::with('roles')->get()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    // 'role' => $user->role,
+                    'created_at' => $user->created_at->diffForHumans(),
+                ];
+            }),
+        ])->with('success', $isUpdate ? 'User updated successfully.' : 'User created successfully.');
     }
 
 
@@ -108,7 +121,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role,
+                // 'role' => $user->role,
             ]
         ]);
     }

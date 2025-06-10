@@ -25,6 +25,7 @@ class AuthServices
             'password' => 'required|string',
         ]);
 
+
         if ($validator->fails()) {
             return Inertia::render('Login/Index', [
                 'message' => 'User name or Password is Required',
@@ -39,7 +40,7 @@ class AuthServices
             } else {
                 return Inertia::render('Login/Index', [
                     'message' => 'User name or Password is incorrect',
-                ])->toResponse(request())->setStatusCode(422);
+                ]);
             }
         }
     }
