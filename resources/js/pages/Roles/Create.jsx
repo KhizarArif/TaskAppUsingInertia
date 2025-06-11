@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useAdminLayout from "../../Layouts/useAdminLayout";
 import { router, useForm } from "@inertiajs/react";
 
-const Create = ({ permissions }) => {
+const Create = ({ role, permissions, rolePermissions }) => {
+    const isEdit = !!role?.id;
+
     const { data, setData } = useForm({
-        name: "",
-        status: "",
-        permissions: [],
+        name: role?.name || "",
+        id: role?.id || null,
+        status: role?.status || "",
+        permissions: role ? Object.values(rolePermissions) : [],
     });
+
+    useEffect(() => {
+        if (role) {
+            setData("permissions", Object.values(rolePermissions));
+        }
+    }, [role]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,14 +38,27 @@ const Create = ({ permissions }) => {
         setData("name", "");
     };
 
+    const handleCheckboxChange = (e) => {
+        const value = parseInt(e.target.value);
+        if (e.target.checked) {
+            setData("permissions", [...data.permissions, value]);
+        } else {
+            setData(
+                "permissions",
+                data.permissions.filter((id) => id !== value)
+            );
+        }
+    };
+
     return (
         <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-4xl mx-auto">
             <h1 className="text-2xl font-semibold mb-6 text-gray-800">
-                Create Role
+                {isEdit ? "Edit Role" : "Create Role"} Role
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Row 1: Name and Status */}
+                {data.id && <input type="hidden" name="id" value={data.id} />}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -87,22 +109,7 @@ const Create = ({ permissions }) => {
                                     checked={data.permissions?.includes(
                                         permission.id
                                     )}
-                                    onChange={(e) => {
-                                        const value = parseInt(e.target.value);
-                                        if (e.target.checked) {
-                                            setData("permissions", [
-                                                ...(data.permissions || []),
-                                                value,
-                                            ]);
-                                        } else {
-                                            setData(
-                                                "permissions",
-                                                (data.permissions || []).filter(
-                                                    (id) => id !== value
-                                                )
-                                            );
-                                        }
-                                    }}
+                                    onChange={handleCheckboxChange}
                                     className="accent-blue-600"
                                 />
                                 <span className="text-gray-700">
@@ -117,9 +124,9 @@ const Create = ({ permissions }) => {
                 <div className="text-right">
                     <button
                         type="submit"
-                        className="bg-blue-600 text-white px-6 py-2 rounded-md shadow hover:bg-blue-700 transition-all duration-300"
+                        className="bg-blue-600 cursor-pointer text-white px-6 py-2 rounded-md shadow hover:bg-blue-700 transition-all duration-300"
                     >
-                        Create Role
+                        {isEdit ? "Update" : "Create"} Role
                     </button>
                 </div>
             </form>

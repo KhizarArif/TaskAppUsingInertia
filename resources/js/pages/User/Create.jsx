@@ -20,28 +20,91 @@ const Create = ({ user, allRoles }) => {
         ); // Add if not selected
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Here you would typically send the data to your backend
-        console.log("Form submitted:", data);
-        router.post("/users", data, {
-            onSuccess: () => {
-                // Handle success, e.g., redirect or show a success message
-                console.log("User created successfully");
-            },
-            onError: (errors) => {
-                // Handle errors, e.g., show validation messages
-                console.error("Error creating user:", errors);
-            },
-        });
-        // Reset form after submission
-        setData({
-            name: "",
-            email: "",
-            password: "",
-            roles: [], // Reset roles too
-        });
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     // Here you would typically send the data to your backend
+    //     console.log("Form submitted:", data);
+    //     router.post("/users", data, {
+    //         onSuccess: () => {
+    //             // Handle success, e.g., redirect or show a success message
+    //             console.log("User created successfully");
+    //         },
+    //         onError: (errors) => {
+    //             // Handle errors, e.g., show validation messages
+    //             console.error("Error creating user:", errors);
+    //         },
+    //     });
+    //     // Reset form after submission
+    //     setData({
+    //         name: "",
+    //         email: "",
+    //         password: "",
+    //         roles: [], // Reset roles too
+    //     });
+    // };
+
+//     const handleSubmit = (e) => {
+//     e.preventDefault();
+
+//     // Determine if we're creating or updating
+//     const isUpdate = user.id !== null;
+//     const url = isUpdate ? `/users/${user.id}` : '/users';
+//     const method = isUpdate ? 'put' : 'post';
+
+//     router[method](url, data, {
+//         preserveScroll: true,
+//         onSuccess: () => {
+//             console.log(`User ${isUpdate ? 'updated' : 'created'} successfully`);
+//             // Redirect or show success message
+//             if (!isUpdate) {
+//                 setData({
+//                     name: "",
+//                     email: "",
+//                     password: "",
+//                     roles: [],
+//                 });
+//             }
+//         },
+//         onError: (errors) => {
+//             console.error(`Error ${isUpdate ? 'updating' : 'creating'} user:`, errors);
+//         },
+//     });
+// };
+
+const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Prepare the data to match your backend expectations
+    const formData = {
+        ...data,
+        id: user.id || null, // Include ID for updates
+        roles: data.roles // Ensure roles are included
     };
+    
+     if (user.id && !formData.password) {
+        delete formData.password;
+    }
+
+    router.post('/users', formData, {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (!user.id) {
+                // Reset form only for new creations
+                setData({
+                    name: "",
+                    email: "",
+                    password: "",
+                    roles: [],
+                });
+            }
+            // Success message will come from the backend
+        },
+        onError: (errors) => {
+            console.error('Error saving user:', errors);
+        },
+    });
+};
+
 
     return (
         <div>
@@ -54,7 +117,7 @@ const Create = ({ user, allRoles }) => {
                     onSubmit={handleSubmit}
                     className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-lg shadow-md"
                 >
-                    <input type="hidden" name="id" value={user?.id || ""} />
+                    <input type="hidden" name="id" value={user.id || ''} />
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -1,18 +1,25 @@
 import React from "react";
 import useAdminLayout from "../../Layouts/useAdminLayout";
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { Edit, Trash2Icon } from "lucide-react";
 
 const Index = ({ roles }) => {
+    const { props } = usePage();
+    const permissions = props.auth?.permissions || [];
+
+    const can = (perm) => permissions.includes(perm);
     return (
         <div>
             <div className="p-3 w-full">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-semibold mb-4">Roles</h1>
-                    <Link href="/roles/create">
-                        <button className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            Create Role
-                        </button>
-                    </Link>
+                    {can("create roles") && (
+                        <Link href="/roles/create">
+                            <button className="bg-blue-600 cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                Create Role
+                            </button>
+                        </Link>
+                    )}
                 </div>
                 <div className="overflow-x-auto rounded-xl shadow-sm mt-4 w-full">
                     <table className="w-full divide-y divide-gray-200">
@@ -76,9 +83,13 @@ const Index = ({ roles }) => {
                                                             // Different colors for different permission types
                                                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                                         ${
-                                                                            name.includes("admin")
+                                                                            name.includes(
+                                                                                "admin"
+                                                                            )
                                                                                 ? "bg-red-100 text-red-800"
-                                                                                : name.includes("edit")
+                                                                                : name.includes(
+                                                                                      "edit"
+                                                                                  )
                                                                                 ? "bg-yellow-100 text-yellow-800"
                                                                                 : "bg-blue-100 text-blue-800"
                                                                         }`}
@@ -113,22 +124,37 @@ const Index = ({ roles }) => {
                                             {role.created_at}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm space-x-2">
-                                            <Link
-                                                // href={route('roles.edit', role.id)}
-                                                className="text-blue-500 hover:text-blue-700"
-                                                title="Edit"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                onClick={() =>
-                                                    confirmDelete(role.id)
-                                                }
-                                                className="text-red-500 hover:text-red-700"
-                                                title="Delete"
-                                            >
-                                                Delete
-                                            </button>
+                                            {can("edit roles") && (
+                                                <button
+                                                    // href={route('roles.edit', role.id)}
+                                                    onClick={() =>
+                                                        router.get(
+                                                            `/roles/${role.id}/edit`
+                                                        )
+                                                    }
+                                                    className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                                                    title="Edit"
+                                                >
+                                                    <Edit size={18} />
+                                                </button>
+                                            )}
+
+                                            {can("delete roles") && (
+                                                <button
+                                                    onClick={() =>
+                                                        router.delete(
+                                                            `/roles/${role.id}`
+                                                        )
+                                                    }
+                                                    // href={route('roles.destroy', role.id)}
+                                                    // method="delete"
+
+                                                    className="text-red-500 hover:text-red-700 cursor-pointer"
+                                                    title="Delete"
+                                                >
+                                                    <Trash2Icon size={18} />
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

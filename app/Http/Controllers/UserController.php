@@ -60,49 +60,44 @@ class UserController extends Controller
             ],
             // 'role' => 'required',
             'password' => $isUpdate ? 'nullable|string|min:6' : 'required|string|min:6',
+            'roles' => 'required|array',
         ];
 
-        $validate = Validator::make($request->all(), $rules);
-        // dd("Validating", $validate->errors());
-        if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate)->withInput();
-        }
+        // $validate = Validator::make($request->all(), $rules);
+        // // dd("Validating", $validate->errors());
+        // if ($validate->fails()) {
+        //     return redirect()->back()->withErrors($validate)->withInput();
+        // }
+        $validated = $request->validate($rules);
 
         if ($isUpdate) {
             $user = User::findOrFail($request->id);
-            $user->name = $request->name;
-            $user->email = $request->email;
+            // $user->name = $request->name;
+            // $user->email = $request->email;
             // $user->role = $request->role;
-
-            if ($request->filled('password')) {
-                $user->password = bcrypt($request->password);
+            if (!empty($validated['password'])) {
+                $validated['password'] = bcrypt($validated['password']);
+            } else {
+                unset($validated['password']); // Remove password from update if empty
             }
 
-            $user->save();
-            $user->syncRoles($request->roles);
+            $user->update($validated);
         } else {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                // 'role' => $request->role,
-                'password' => bcrypt($request->password),
-                'email_verified_at' => now(),
-            ]);
-            $user->syncRoles($request->roles);
+            // $user = User::create([
+            //     'name' => $request->name,
+            //     'email' => $request->email,
+            //     // 'role' => $request->role,
+            //     'password' => bcrypt($request->password),
+            //     'email_verified_at' => now(),
+            // ]);
+            $validated['password'] = bcrypt($validated['password']);
+            $validated['email_verified_at'] = now();
+            $user = User::create($validated);
         }
 
+        $user->syncRoles($request->roles);
         // return Inertia::location(route('users.index'));
-        return Inertia::render('User/Index', [
-            'users' => User::with('roles')->get()->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    // 'role' => $user->role,
-                    'created_at' => $user->created_at->diffForHumans(),
-                ];
-            }),
-        ])->with('success', $isUpdate ? 'User updated successfully.' : 'User created successfully.');
+        return Inertia::render('User/Index')->with('success', $isUpdate ? 'User updated successfully.' : 'User created successfully.');
     }
 
 
@@ -113,6 +108,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::find($id);
+        $roles = Role::all()->pluck('name');
         if (!$user) {
             return redirect()->route('users.index')->with('error', 'User not found.');
         }
@@ -121,8 +117,9 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                // 'role' => $user->role,
-            ]
+                'roles' => $user->roles->pluck('name')
+            ],
+            'allRoles' => array_values($roles->toArray()),
         ]);
     }
 
