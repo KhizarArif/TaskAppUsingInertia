@@ -15,8 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles')->get();
-        // dd($users);
+        $users = User::with('roles')->get(); 
         return Inertia::render('User/Index', [
             'users' => $users
         ]);
@@ -27,8 +26,6 @@ class UserController extends Controller
      */
     public function create()
     {
-        // $roles = Role::all()->pluck('name', 'id');
-        // dd($roles);
         return Inertia::render('User/Create', [
             'user' => [
                 'id' => null,
@@ -63,40 +60,24 @@ class UserController extends Controller
             'roles' => 'required|array',
         ];
 
-        // $validate = Validator::make($request->all(), $rules);
-        // // dd("Validating", $validate->errors());
-        // if ($validate->fails()) {
-        //     return redirect()->back()->withErrors($validate)->withInput();
-        // }
         $validated = $request->validate($rules);
 
         if ($isUpdate) {
             $user = User::findOrFail($request->id);
-            // $user->name = $request->name;
-            // $user->email = $request->email;
-            // $user->role = $request->role;
             if (!empty($validated['password'])) {
                 $validated['password'] = bcrypt($validated['password']);
             } else {
-                unset($validated['password']); // Remove password from update if empty
+                unset($validated['password']);
             }
 
             $user->update($validated);
         } else {
-            // $user = User::create([
-            //     'name' => $request->name,
-            //     'email' => $request->email,
-            //     // 'role' => $request->role,
-            //     'password' => bcrypt($request->password),
-            //     'email_verified_at' => now(),
-            // ]);
             $validated['password'] = bcrypt($validated['password']);
             $validated['email_verified_at'] = now();
             $user = User::create($validated);
         }
 
         $user->syncRoles($request->roles);
-        // return Inertia::location(route('users.index'));
         return Inertia::render('User/Index')->with('success', $isUpdate ? 'User updated successfully.' : 'User created successfully.');
     }
 

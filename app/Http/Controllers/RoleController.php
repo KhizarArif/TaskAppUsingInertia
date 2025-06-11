@@ -12,8 +12,7 @@ use Spatie\Permission\Models\Role;
 class RoleController extends Controller
 {
     public function index()
-    {
-        // Logic to display roles
+    { 
         $roles = Role::with('permissions:id,name')->get()->map(function ($role) {
             return [
                 ...$role->only(['id', 'name', 'status']),
@@ -22,15 +21,6 @@ class RoleController extends Controller
                 'permissions' => $role->permissions->pluck('name', 'id')
             ];
         });
-        // $roles = Role::all()->map(function ($role) {
-        //     return [
-        //         'id' => $role->id,
-        //         'name' => $role->name,
-        //         'status' => $role->status,
-        //         'created_at' => $role->created_at->diffForHumans(),
-        //         'updated_at' => $role->updated_at->diffForHumans(),
-        //     ];
-        // });
 
         return Inertia::render('Roles/Index', [
             'roles' => $roles,
@@ -52,39 +42,6 @@ class RoleController extends Controller
             'permissions' => $permissions,
         ]);
     }
-
-    // public function store(Request $request)
-    // {
-    //     $validate = Validator::make($request->all(), [
-    //         'name' => 'required|string|max:255',
-    //         'status' => 'required',
-    //         'permissions' => 'required',
-    //     ]);
-
-    //     if ($validate->fails()) {
-    //         return redirect()->back()->withErrors($validate)->withInput();
-    //     }
-
-    //     $data = $validate->validated();
-    //     $role = Role::updateOrCreate(
-    //         ['id' => $data['id'] ?? null], // Update if ID exists
-    //         ['name' => $data['name'], 'status' => $data['status']]
-    //     );
-    //     $role->syncPermissions($request->permissions);
-
-    //     return Inertia::render('Roles/Index', [
-    //         'success' => 'Role created successfully.',
-    //         'roles' => Role::with('permissions:id,name')->get()->map(function ($role) {
-    //             return [
-    //                 ...$role->only(['id', 'name', 'status']),
-    //                 'created_at' => $role->created_at->diffForHumans(),
-    //                 'updated_at' => $role->updated_at->diffForHumans(),
-    //                 'permissions' => $role->permissions->pluck('name', 'id')
-    //             ];
-    //         }),
-    //     ]);
-    // }
-
 
 
     public function store(Request $request)
@@ -120,7 +77,7 @@ class RoleController extends Controller
             $role = Role::create([
                 'name' => $data['name'],
                 'status' => $data['status'],
-                'guard_name' => 'web', // always include this explicitly
+                'guard_name' => 'web',
             ]);
         }
 
@@ -177,7 +134,7 @@ class RoleController extends Controller
             $role->permissions()->detach();
 
             // Detach users from the role (model_has_roles)
-            $role->users()->detach(); // Optional: only if using relationship on Role model
+            $role->users()->detach();
 
             $role->delete();
 

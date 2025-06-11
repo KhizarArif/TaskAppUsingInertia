@@ -61,15 +61,6 @@ const Index = ({ roles }) => {
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800">
                                             {role.name}
                                         </td>
-                                        {/* <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800"> */}
-                                        {/* <td className="max-w-xs break-words whitespace-normal min-h-[40px]">
-                                            {Object.keys(role.permissions)
-                                                .length > 0
-                                                ? Object.values(
-                                                      role.permissions
-                                                  ).join(", ")
-                                                : "No permissions assigned"}
-                                        </td> */}
                                         <td className="px-4 py-3">
                                             <div className="max-w-xs flex flex-wrap gap-2">
                                                 {Object.keys(role.permissions)
@@ -79,8 +70,6 @@ const Index = ({ roles }) => {
                                                     ).map(([id, name]) => (
                                                         <span
                                                             key={id}
-                                                            // className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                                                            // Different colors for different permission types
                                                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                                         ${
                                                                             name.includes(
@@ -146,9 +135,6 @@ const Index = ({ roles }) => {
                                                             `/roles/${role.id}`
                                                         )
                                                     }
-                                                    // href={route('roles.destroy', role.id)}
-                                                    // method="delete"
-
                                                     className="text-red-500 hover:text-red-700 cursor-pointer"
                                                     title="Delete"
                                                 >
